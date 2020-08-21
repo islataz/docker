@@ -1,7 +1,7 @@
 .PHONY: build run
 
 # Default values for variables
-REPO  ?= dorowu/ubuntu-desktop-lxde-vnc
+REPO  ?= islataz/docker
 TAG   ?= latest
 # you can choose other base image versions
 IMAGE ?= ubuntu:20.04
@@ -31,12 +31,12 @@ run:
 		-e OPENBOX_ARGS="--startup /usr/bin/galculator" \
 		-v ${PWD}/ssl:/etc/nginx/ssl \
 		--device /dev/snd \
-		--name ubuntu-desktop-lxde-test \
+		--name docker \
 		$(REPO):$(TAG)
 
 # Connect inside the running container for debugging
 shell:
-	docker exec -it ubuntu-desktop-lxde-test bash
+	docker exec -it docker
 
 # Generate the SSL/TLS config for HTTPS
 gen-ssl:

@@ -13,38 +13,49 @@ RUN sed -i 's#http://archive.ubuntu.com/ubuntu/#mirror://mirrors.ubuntu.com/mirr
 
 # built-in packages
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt update \
-    && apt install -y --no-install-recommends software-properties-common curl apache2-utils \
-    && apt update \
-    && apt install -y --no-install-recommends --allow-unauthenticated \
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y language-pack-es language-pack-es-base apt-utils
+
+RUN sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=es_ES.UTF-8
+
+ENV LANG es_ES.UTF-8
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends software-properties-common curl apache2-utils \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --allow-unauthenticated \
         supervisor nginx sudo net-tools zenity xz-utils \
         dbus-x11 x11-utils alsa-utils \
         mesa-utils libgl1-mesa-dri \
-    && apt autoclean -y \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
-# install debs error if combine together
-RUN apt update \
-    && apt install -y --no-install-recommends --allow-unauthenticated \
-        xvfb x11vnc \
-        vim-tiny firefox ttf-ubuntu-font-family ttf-wqy-zenhei  \
-    && apt autoclean -y \
-    && apt autoremove -y \
+    && apt-get autoclean -y \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt update \
-    && apt install -y gpg-agent \
+# install debs error if combine together
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --allow-unauthenticated \
+        xvfb x11vnc \
+        vim-tiny firefox ttf-ubuntu-font-family ttf-wqy-zenhei  \
+    && apt-get autoclean -y \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && apt-get install -y gpg-agent \
     && curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && (dpkg -i ./google-chrome-stable_current_amd64.deb || apt-get install -fy) \
     && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add \
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt update \
-    && apt install -y --no-install-recommends --allow-unauthenticated \
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated \
         lxde gtk2-engines-murrine gnome-themes-standard gtk2-engines-pixbuf gtk2-engines-murrine arc-theme \
-    && apt autoclean -y \
-    && apt autoremove -y \
+    && apt-get autoclean -y \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -57,8 +68,8 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/
 RUN chmod +x /bin/tini
 
 # ffmpeg
-RUN apt update \
-    && apt install -y --no-install-recommends --allow-unauthenticated \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --allow-unauthenticated \
         ffmpeg \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir /usr/local/ffmpeg \
